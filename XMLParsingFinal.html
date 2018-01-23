@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+    <style> body{ width: 100%;}</style>
+<script type="text/javascript">
+var xmlDoc;
+function invokeCheckInputTextBox(e){
+    if(e.keyCode==13)
+        {
+            document.getElementById("button1").click();
+            return false;
+        }
+    return true;
+}
+        function CheckInputTextBox()
+        {
+            var inpurtStr=HomeForm.InputURL.value.trim();
+
+        if (!HomeForm.InputURL.value || inpurtStr=='')
+        {
+
+           alert("Please do not leave the textbox blank, fill in some valid XML file path");
+
+           return (false);
+        }
+            else if(!HomeForm.InputURL.value.endsWith(".xml"))
+                {
+                    alert("Input can be of type \'XML\' only."+"\n"+"Please enter file with .xml extension");
+                }
+       
+      else{
+          //var inputURL=HomeForm.InputURL.value;
+          var url=HomeForm.InputURL.value;
+          var xmlDOc=loadXML(url);
+          if(xmlDOc!=null){ var xmlFinalDoc=generateTable(xmlDoc);}
+          
+      }
+        
+            return (true);
+            
+        }
+    
+  function loadXML(url) {
+      try{
+    
+
+        if (window.XMLHttpRequest)
+            {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+                //alert("Inside XMLHttpRequest1");
+            }
+            else
+            {
+            // code for IE6, IE5
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                 //alert("Inside XMLHttpRequest1");
+            }
+
+        xmlhttp.open("GET",url,false); //open, send, responseXML are
+      //alert("before send");
+          xmlhttp.setRequestHeader('Content-Type','text/xml');
+         xmlhttp.onreadystatechange = function () {
+        if(this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            console.log("Response Text"+xmlhttp.responseText);
+            console.log("Response XML inside onreadystatechange"+this.responseXML);
+            console.log("Response Text inside onreadystatechange"+this.responseText);
+            console.log("Response "+this.response);
+           //alert("Status"+this.status+this.responseXML);
+        }
+      
+    };
+        xmlhttp.send(); //properties of XMLHTTPRequest
+     // alert("after send");
+        xmlDoc=xmlhttp.responseXML;
+       //alert("responsexml "+xmlhttp.responseXML);
+        console.log("response "+xmlhttp.response);
+
+          //alert("Status:"+xmlhttp.status+"\n"+"Status Text:"+xmlhttp.statusText+"\n"+"Response XML:"+xmlhttp.responseXML+"\n"+"Response Text:"+xmlhttp.responseText+"\n"+"ReadyState:"+xmlhttp.readyState);
+    if(xmlhttp.status =='404'){
+    alert("XML file does not exist, please check the path");
+    return;
+                }
+          xmlDoc=xmlhttp.responseXML;
+          /*if(xmlhttp.responseXML==null){
+          var parser=new DOMParser();
+          var domParser=parser.parseFromString(xmlhttp.responseXML,"text/html").getElementsByTagName("parsererror")[0];
+          if(domParser.length>0){
+              alert("Parse error in xml document,please check your input file");
+              return; 
+          }
+          }*/
+         /* { if (xmlDoc.parseError.errorCode != 0) {
+           var myErr = xmlDoc.parseError;
+           //generateError(xmlDoc);
+           //hWin = window.open("", "Error", "height=300,width=340");
+           //hWin.document.write(html_text);
+              alert("Error while Parsing the document, please check your input file"+"\n"+myErr);
+            } */
+                 // alert("Status:"+xmlhttp.status+"\n"+"Status Text:"+xmlhttp.statusText+"\n"+"Response XML:"+xmlhttp.responseXML+"\n"+"Response Text:"+xmlhttp.responseText+"\n"+"ReadyState:"+xmlhttp.readyState);
+          try{ 
+          if(xmlhttp.status==200&&xmlhttp.responseXML==null&&xmlhttp.readyState==4){
+          //if(xmlhttp.response==null){
+          var parser=new DOMParser();
+          var domParser=parser.parseFromString(xmlhttp.responseXML,"text/html").getElementsByTagName("parsererror");
+          /* if(domParser.length>0){
+              alert("Parse error in xml document,please check your input file");
+              return; 
+          }
+          
+              else{
+              alert("Input file doesn't have any XML content.");
+              return;
+              }*/ 
+          //}
+          }
+          }
+          catch(err){
+              alert(err.message);
+              if(err.message.startsWith("XML Parsing Error")){
+                 alert("XML Parsing Error");
+                  return;
+          }
+              else if(err.message.contains("XML Parsing Error: no root element found")){
+                  alert("Input file doesn't have any XML content.");
+                  return;
+              }
+                 }
+          
+         /* if(xmlhttp.responseXML==null){
+              alert("Parse error in xml document,please check your input file");
+              return;
+          } */ 
+
+                  /* if(xmlDoc.documentElement.tagName=="parsererror"){
+                alert("Error Parsing the XML document, please check your input file");
+                return; 
+            }*/
+         xmlDoc=xmlhttp.responseXML;
+          //alert("xmlhttpResponseXML"+xmlhttp.responseXML);
+          if(xmlhttp.responseXML==null && xmlhttp.response.trim()==''){
+              alert("Parsing Error"+"\n"+"Input XML file is EMPTY");
+              return; 
+          }
+          else if(xmlhttp.responseXML==null && xmlhttp.response!=''){
+              alert("Error while parsing the file, please check the input file");
+              return;
+              
+          }
+         /*  if(xmlhttp.responseXML==null){
+              alert("Error Code"+xmlDoc.parseError.errorCode);
+          var parser=new DOMParser();
+          var domParser=parser.parseFromString(xmlhttp.response,"text/html").getElementsByTagName("parsererror")[0].item(0).children.length;
+              var domString=parser.parseFromString(xmlhttp.responseXML,"text/html").getElementsByTagName("parsererror")[0].item(0).children.nodeValue; 
+          if(domParser!=0 && domString.contains("XML Parsing Error: no root element found")){
+              alert("Input file doesn't have any XML content.");
+              return; 
+          }
+              else if(domParser!=0 && domString.startsWith("XML Parsing Error: no root element found"))
+                  {
+                      alert("Parse error in xml document,please check your input file");
+                      return;
+                  } 
+          } */ 
+             
+
+      }
+      catch(err){
+          
+            if(err.message=="A network error occurred."+xmlhttp.status==0&&xmlhttp.responseXML==null&&xmlhttp.responseText==''&&xmlhttp.readyState==1)
+                {
+                    alert("File NOT available. Please check the path of your file");
+                   // break;
+                    return;
+                }
+                else{
+                 alert("Error while parsing the XML file,please check your input file"+"\n"+ "Error:"+err.message);  
+                    return;
+                }
+            
+        return;
+      }
+
+        return xmlDoc;
+    }
+
+    function generateTable(xmlDoc){
+        var getRows=xmlDoc.getElementsByTagName("Row");
+        if(getRows.length<=0)
+            {
+                alert("XML file do not have any airlines related data");
+                return;
+            }
+        else{
+            
+            displayXMLTable(xmlDoc);
+            
+        }
+        return;
+        }
+        
+       
+function displayXMLTable(xmlDoc){
+    try{ 
+            var headerContents=xmlDoc.getElementsByTagName("Header").item(0).children.length;
+            if(headerContents==0){
+            alert("No Airlines listed in the input XML file");
+            return;
+        }
+        var NonNullHeaders=0;
+        for(i=0;i<headerContents;i++){
+            if(xmlDoc.getElementsByTagName("Header").item(0).children[i].firstChild!=null){
+                NonNullHeaders++;
+            }
+            else{
+                alert("Input XML file has one of the header value as blank/empty, please give a valid XML file");
+                return;
+            }
+        }
+    var mywindow=window.open("","_blank","width=1500,height=1000,scrollbars=2,resizable=1,<html><style> body{overflow-y: scroll;overflow-x: scroll;</style><body>");
+    /* var headerContents=xmlDoc.getElementsByTagName("Header").item(0).children.length;
+            if(headerContents==0){
+            alert("No Airlines listed in the input XML file");
+            return;
+        } */
+    mywindow.document.write("<table border=1 width=\"104%\">");
+    mywindow.document.write("<tr>");
+        /* var NonNullHeaders=0;
+        for(i=0;i<headerContents;i++){
+            if(xmlDoc.getElementsByTagName("Header").item(0).children[i].firstChild!=null){
+                NonNullHeaders++;
+            }
+            else{
+                alert("Input XML file has one of the headers as NULL, please give a valid XML file");
+                return;
+            }
+        } */
+    for(i=0;i<headerContents;i++){
+        if(xmlDoc.getElementsByTagName("Header").item(0).children[i].firstChild!=null){
+        HeaderData=xmlDoc.getElementsByTagName("Header").item(0).children[i].firstChild.nodeValue.trim();
+        mywindow.document.write("<th>"+HeaderData+"</th>");
+        console.log("Header Data"+HeaderData);
+        }
+        else{
+            mywindow.document.write("<th> </th>");
+            console.log("Enpty Header");
+            //xmlDoc.getElementsByTagName("Header").item(0).children[i].firstChild.nodeValue="data";
+        }
+    }
+    mywindow.document.write("</td>");
+    var NumberOfRows=xmlDoc.getElementsByTagName("Row").length;
+    console.log("Number of Rows"+NumberOfRows);
+    for(var i=0;i<NumberOfRows;i++){
+        var NumberOfColumnsInEachRow=xmlDoc.getElementsByTagName("Row").item(i).children.length;
+        console.log("NumberOfColumnsInEachRow"+NumberOfColumnsInEachRow);
+        mywindow.document.write("<tr>");
+            for(var j=0;j<NumberOfColumnsInEachRow;j++)
+                {
+                    console.log("Node Name"+xmlDoc.getElementsByTagName("Row").item(i).children[j].nodeName);
+                    if(xmlDoc.getElementsByTagName("Header").item(0).children[1].firstChild.nodeValue!=null){
+                        console.log("Node Value" +xmlDoc.getElementsByTagName("Header").item(0).children[1].firstChild.nodeValue);
+                    }
+                    if(xmlDoc.getElementsByTagName("Row").item(i).children[j].nodeName==xmlDoc.getElementsByTagName("Header").item(0).children[0].firstChild.nodeValue){
+                        if(xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild!=null){
+                    mywindow.document.write("<td>"+xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue.trim()+"</td>");
+                    //console.log("Airline data"+xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue);
+                    }
+                        else{
+                            mywindow.document.write("<td> </td>");
+                        }
+                    }
+                    else if(xmlDoc.getElementsByTagName("Row").item(i).children[j].nodeName==xmlDoc.getElementsByTagName("Header").item(0).children[1].firstChild.nodeValue){
+                        if(xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild!=null){
+                     mywindow.document.write("<td>"+xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue.trim()+"</td>");
+                    console.log("IATA data"+xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue);
+                           
+                        }
+                        else{
+                            mywindow.document.write("<td> </td>");
+                        }
+
+                    }
+                   
+                     else if(xmlDoc.getElementsByTagName("Row").item(i).children[j].nodeName==xmlDoc.getElementsByTagName("Header").item(0).children[2].firstChild.nodeValue){
+                        
+                        var NumberOfHubData=xmlDoc.getElementsByTagName(xmlDoc.getElementsByTagName("Header").item(0).children[2].firstChild.nodeValue).item(i).children.length;
+                        console.log("Number of Hubs"+" "+i+NumberOfHubData);
+                         mywindow.document.write("<td> <ul>");
+                        if(NumberOfHubData!=0)
+                            {
+                                if(xmlDoc.getElementsByTagName(xmlDoc.getElementsByTagName("Header").item(0).children[2].firstChild.nodeValue).item(i).children[0].firstChild!=null){
+            
+                            console.log("Hub"+""+i+""+xmlDoc.getElementsByTagName(xmlDoc.getElementsByTagName("Header").item(0).children[2].firstChild.nodeValue).item(i).children[0].firstChild.nodeValue);
+                            mywindow.document.write("<li Style=\"font-weight:bold\">"+xmlDoc.getElementsByTagName(xmlDoc.getElementsByTagName("Header").item(0).children[2].firstChild.nodeValue).item(i).children[0].firstChild.nodeValue.trim()+"</li>");                                      
+                                }
+                                else{
+                                    mywindow.document.write("<li> </li> ");
+                                } 
+                            } 
+                        //mywindow.document.write("<td> <ul>");
+                        for(x=1;x<NumberOfHubData;x++){
+                            if(xmlDoc.getElementsByTagName(xmlDoc.getElementsByTagName("Header").item(0).children[2].firstChild.nodeValue).item(i).children[x].firstChild!=null){
+            
+                            console.log("Hub"+""+i+""+xmlDoc.getElementsByTagName(xmlDoc.getElementsByTagName("Header").item(0).children[2].firstChild.nodeValue).item(i).children[x].firstChild.nodeValue);
+                            mywindow.document.write("<li>"+xmlDoc.getElementsByTagName(xmlDoc.getElementsByTagName("Header").item(0).children[2].firstChild.nodeValue).item(i).children[x].firstChild.nodeValue.trim()+"</li>");                                      
+                                }
+
+                                else{ 
+                            mywindow.document.write("<li> </li> ");
+                                }
+                            }
+
+                       mywindow.document.write("</ul> </td>");
+                            
+                        }
+                    
+                              
+                
+                    else if(xmlDoc.getElementsByTagName("Row").item(i).children[j].nodeName==xmlDoc.getElementsByTagName("Header").item(0).children[3].firstChild.nodeValue){
+                        
+                        //console.log("Notes tag length"+xmlDoc.getElementsByTagName("Row").item(i).children[j].length);
+                        if(xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild!=null){
+                    mywindow.document.write("<td>"+xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue.trim()+"</td>");
+                    console.log("Notes"+xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue);                       
+                    }
+                        else{
+                            mywindow.document.write("<td>"+" "+"</td>");
+                        }
+                    }
+                    
+                    
+                    else if(xmlDoc.getElementsByTagName("Row").item(i).children[j].nodeName==xmlDoc.getElementsByTagName("Header").item(0).children[4].firstChild.nodeValue){
+                        if(xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild!=null){
+                            var link=xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue.trim();
+                     mywindow.document.write("<td> <a href="+link+">"+xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue.trim()+"</a></td>");
+                    console.log("Homepage"+xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue);  
+                            //" target=\"_blank\">"
+                        }
+                      else{
+                          mywindow.document.write("<td><br/> </td>");
+                      }
+                    }
+                    else if(xmlDoc.getElementsByTagName("Row").item(i).children[j].nodeName==xmlDoc.getElementsByTagName("Header").item(0).children[5].firstChild.nodeValue){
+                        if(xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild!=null){
+                    mywindow.document.write("<td> <img src="+xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue+" + width=400px height=200px /></td>");
+                    console.log("Plane"+xmlDoc.getElementsByTagName("Row").item(i).children[j].firstChild.nodeValue); 
+                        }
+                            else{
+                          mywindow.document.write("<td> </td>");
+                       }
+                    }
+                    else{
+                        mywindow.document.write("<td><br/></td>");
+                    }
+                       
+        } 
+         mywindow.document.write("</tr>");  
+    }
+    //mywindow.document.write("</tr>");
+    mywindow.document.write("</table></body><noscript></html>");
+        }
+    catch(err)
+        {
+            if(err.message=="A network error occurred."+xmlhttp.status==0&&xmlhttp.responseXML==null&&xmlhttp.responseText==''&&xmlhttp.readyState==1)
+                {
+                    alert("File NOT available. Please check the path of your file");
+                    return;
+                }
+                else{
+                 alert("Following error has occurred:"+"\n"+err.message);   
+                    return;
+                }
+            
+        }
+    return;
+    }
+       
+</script>
+<body>
+<div id="HomePage" style="text-align: center;">
+ <h2 style="text-align: center;">Enter URL for Airlines List XML File</h2>
+    <br/>
+        
+<form name="HomeForm" method="get" action="#">
+    <input type="text" name="InputURL" onkeypress ="return invokeCheckInputTextBox(event)" >
+    <br/>
+    <br/>
+    <input name="SubmitQueryButton" Id="button1" type="button" value="Submit Query" onClick="return CheckInputTextBox()">
+</form>
+
+</div>
+    <noscript>
+</body>
+    
+</html>
